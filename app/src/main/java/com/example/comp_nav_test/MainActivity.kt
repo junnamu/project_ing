@@ -344,11 +344,12 @@ fun Q1(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Blue"), Answer("Red")
+            Answer("와~ 드디어 나만의 시간이다. 편하고 행복하다"),
+            Answer("외롭다 바깥과는 달리 깜깜하고 너무 조용해")
         )
     }
 
-    val questionText = "What is your favorite color?"
+    val questionText = "아무도 없는 집에 들어가면 어떤 느낌을 받나요?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -369,11 +370,11 @@ fun Q2(navController: NavController, scoreViewModel: ScoreViewModel) { // scoreV
 
     val answerOptions = remember {
         listOf(
-            Answer("Option A"), Answer("Option B")
+            Answer("아뇨"), Answer("네")
         )
     }
 
-    val questionText = "Choose an option"
+    val questionText = "학창시절 인기가 많았나요?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -395,11 +396,12 @@ fun Q3(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Option X"), Answer("Option Y")
+            Answer("와~ 갑자기 혼자만의 시간이 생겼네. 뭐하지? 신나~~"),
+            Answer("아 이럴수가 그럼.. 누구를 만날까? 연락해봐야지")
         )
     }
 
-    val questionText = "Another question"
+    val questionText = "친구랑 만나기로 했는데 갑자기 약속이 취소되었을 때"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -600,7 +602,7 @@ fun Q11(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question11"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -625,7 +627,7 @@ fun Q12(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question12"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -650,7 +652,7 @@ fun Q13(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question13"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -675,7 +677,7 @@ fun Q14(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question14"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -700,7 +702,7 @@ fun Q15(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question15"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -725,7 +727,7 @@ fun Q16(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question16"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -750,7 +752,7 @@ fun Q17(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question17"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -775,7 +777,7 @@ fun Q18(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question18"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -800,7 +802,7 @@ fun Q19(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question19"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -826,7 +828,7 @@ fun Q20(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "question10"
+    val questionText = "question20"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
