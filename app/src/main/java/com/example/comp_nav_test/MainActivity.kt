@@ -88,9 +88,6 @@ class ScoreViewModel : ViewModel() {
         selectedAnswerTextMap[answerIndex] = answerText
     }
 
-    fun getSelectedAnswerText(answerIndex: Int): String? {
-        return selectedAnswerTextMap[answerIndex]
-    }
 
     // New function to get all answer scores
     fun getAnswerScores(): List<Int> {
@@ -101,10 +98,6 @@ class ScoreViewModel : ViewModel() {
         return answerScores
     }
 
-    // New function to get the count of selected answers for each choice
-    fun getSelectedAnswerCounts(choiceIndex: Int): Int {
-        return selectedAnswerCountMap[choiceIndex] ?: 0
-    }
 
     fun incrementSelectedAnswerCount(choiceIndex: Int) {
         val currentCount = selectedAnswerCountMap.getOrDefault(choiceIndex, 0)
@@ -112,7 +105,7 @@ class ScoreViewModel : ViewModel() {
     }
 
     companion object {
-        const val MAX_QUESTION_INDEX = 6
+        const val MAX_QUESTION_INDEX = 21
     }
 }
 
@@ -149,11 +142,27 @@ fun AppNavigation(scoreViewModel: ScoreViewModel) {
         composable("q3") { Q3(navController, scoreViewModel) }
         composable("q4") { Q4(navController, scoreViewModel) }
         composable("q5") { Q5(navController, scoreViewModel) }
+        composable("q6") { Q6(navController, scoreViewModel) }
+        composable("q7") { Q7(navController, scoreViewModel) }
+        composable("q8") { Q8(navController, scoreViewModel) }
+        composable("q9") { Q9(navController, scoreViewModel) }
+        composable("q10") { Q10(navController, scoreViewModel) }
+        composable("q11") { Q11(navController, scoreViewModel) }
+        composable("q12") { Q12(navController, scoreViewModel) }
+        composable("q13") { Q13(navController, scoreViewModel) }
+        composable("q14") { Q14(navController, scoreViewModel) }
+        composable("q15") { Q15(navController, scoreViewModel) }
+        composable("q16") { Q16(navController, scoreViewModel) }
+        composable("q17") { Q17(navController, scoreViewModel) }
+        composable("q18") { Q18(navController, scoreViewModel) }
+        composable("q19") { Q19(navController, scoreViewModel) }
+        composable("q20") { Q20(navController, scoreViewModel) }
         composable("results") {
             ResultsPage(scoreViewModel = scoreViewModel)
         }
     }
 }
+
 
 @Composable
 fun Title(navController: NavController) {
@@ -305,8 +314,7 @@ fun QuestionPageContent(
                         val score = calculateScore(answer, answerOptions)
                         scoreViewModel.saveAnswerScore(answerIndex, score)
                         scoreViewModel.saveSelectedAnswerText(
-                            answerIndex,
-                            answer.text
+                            answerIndex, answer.text
                         ) // Save selected answer text
                         onNextClicked()
                     }
@@ -441,7 +449,384 @@ fun Q5(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "Last question"
+    val questionText = "question5"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q6")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q6(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 6
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question6"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q7")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q7(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 7
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question7"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q8")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q8(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 8
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question8"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q9")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q9(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 9
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question9"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q10")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q10(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 10
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q11")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+
+@Composable
+fun Q11(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 11
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q12")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q12(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 12
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q13")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q13(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 13
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q14")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q14(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 14
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q15")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q15(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 15
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q16")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q16(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 16
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q17")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q17(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 17
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q18")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q18(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 18
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q19")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+@Composable
+fun Q19(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 19
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
+
+    QuestionPageContent(answerIndex = answerIndex,
+        question = questionText,
+        answerOptions = answerOptions,
+        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        onNextClicked = {
+            navController.navigate("q20")
+        },
+        onPreviousClicked = {
+            scoreViewModel.clearAnswerScore(answerIndex)
+            navController.popBackStack()
+        })
+}
+
+
+@Composable
+fun Q20(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val answerIndex = 20
+
+    val answerOptions = remember {
+        listOf(
+            Answer("Choice X"), Answer("Choice Y")
+        )
+    }
+
+    val questionText = "question10"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -469,12 +854,11 @@ fun ProportionBar(
     Canvas(
         modifier = modifier
     ) {
-        //canvas size 폭의 5%, 95% 지점을 시작점과 끝점으로 했습니다.
+        //canvas size
         val lineStart = size.width * 0.05f
         val lineEnd = size.width * 0.95f
         //차트 길이
         val lineLength = (lineEnd - lineStart)
-        //(canvas높이 - 차트 높이) * 0.5 를 하면 차트를 그릴 위쪽 오프셋을 구할 수 있습니다.
         val lineHeightOffset = (size.height - strokeWidth) * 0.5f
         val path = Path().apply {
             addRoundRect(
@@ -492,14 +876,12 @@ fun ProportionBar(
         ) {
             var dataStart = lineStart
             dataAndColor.forEach { (number, color) ->
-                //끝점은 시작점 + (변량의 비율 * 전체 길이)
                 val dataEnd = dataStart + ((number.toFloat() / sumOfData) * lineLength)
                 drawRect(
                     color = color,
                     topLeft = Offset(dataStart, lineHeightOffset),
                     size = Size(dataEnd - dataStart, strokeWidth)
                 )
-                //다음 사각형의 시작점은 현재의 끝점
                 dataStart = dataEnd
             }
         }
@@ -511,6 +893,81 @@ fun ProportionBar(
 @Composable
 fun ResultsPage(scoreViewModel: ScoreViewModel) {
     val answerScores = scoreViewModel.getAnswerScores()
+    val answerChoiceCounts = mutableMapOf<Int, Int>()
+    var iCount = 0
+    var eCount = 0
+    var nCount = 0
+    var sCount = 0
+    var tCount = 0
+    var fCount = 0
+    var pCount = 0
+    var jCount = 0
+
+    for ((index) in answerScores.withIndex()) {
+        val selectedAnswerIndex = scoreViewModel.getSelectedAnswerIndex(index)
+        if (selectedAnswerIndex != null) {
+            val choiceCount = answerChoiceCounts.getOrDefault(selectedAnswerIndex, 0)
+            answerChoiceCounts[selectedAnswerIndex] = choiceCount + 1
+
+            when (index) {
+                in 1..5 -> { // 사고/감정 범위
+                    if (selectedAnswerIndex == 0) {
+                        iCount++
+                    } else if (selectedAnswerIndex == 1) {
+                        eCount++
+                    }
+                }
+
+                in 6..10 -> { // 감각/직관 범위
+                    if (selectedAnswerIndex == 0) {
+                        nCount++
+                    } else if (selectedAnswerIndex == 1) {
+                        sCount++
+                    }
+                }
+                in 11..15 -> { // 사고/감정 범위
+                    if (selectedAnswerIndex == 0) {
+                        tCount++
+                    } else if (selectedAnswerIndex == 1) {
+                        fCount++
+                    }
+                }
+                in 15..19 -> { // 판단/인식 범위
+                    if (selectedAnswerIndex == 0) {
+                        pCount++
+                    } else if (selectedAnswerIndex == 1) {
+                        jCount++
+                    }
+                }
+            }
+        }
+    }
+
+    // Percentage 계산
+    val ieCount = iCount + eCount
+    val nsCount = nCount + sCount
+    val tfCount = tCount + fCount
+    val pjCount = pCount + jCount
+
+    val iPercentage = (iCount.toFloat() / ieCount) * 100
+    val ePercentage = (eCount.toFloat() / ieCount) * 100
+    val nPercentage = (nCount.toFloat() / nsCount) * 100
+    val sPercentage = (sCount.toFloat() / nsCount) * 100
+    val tPercentage = (tCount.toFloat() / tfCount) * 100
+    val fPercentage = (fCount.toFloat() / tfCount) * 100
+    val pPercentage = (pCount.toFloat() / pjCount) * 100
+    val jPercentage = (jCount.toFloat() / pjCount) * 100
+
+    val iOrE = if (iCount > eCount) "I" else "E"
+    val nOrS = if (nCount > sCount) "N" else "S"
+    val tOrF = if (tCount > fCount) "T" else "F"
+    val pOrJ = if (pCount > jCount) "P" else "J"
+
+    // 최종 MBTI 출력
+    val finalMBTI = "$iOrE$nOrS$tOrF$pOrJ"
+
+
+
 
     Column(
         modifier = Modifier
@@ -524,58 +981,275 @@ fun ResultsPage(scoreViewModel: ScoreViewModel) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        val answerChoiceCounts = mutableMapOf<Int, Int>()
 
-        for ((index, score) in answerScores.withIndex()) {
-            val selectedAnswerIndex = scoreViewModel.getSelectedAnswerIndex(index)
-            if (selectedAnswerIndex != null) {
-                val choiceCount = answerChoiceCounts.getOrDefault(selectedAnswerIndex, 0)
-                answerChoiceCounts[selectedAnswerIndex] = choiceCount + 1
-            }
-        }
 
-        // Calculate i and e percentages
-        val iCount = answerChoiceCounts[0] ?: 0
-        val eCount = answerChoiceCounts[1] ?: 0
-        val totalCount = iCount + eCount
-        val iPercentage = (iCount.toFloat() / totalCount) * 100
-        val ePercentage = (eCount.toFloat() / totalCount) * 100
-
-        Box(
-            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ProportionBar(
-                data = listOf(iPercentage, ePercentage),
-                colors = listOf(Color.Blue, Color.Red),
-                strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
-                modifier = Modifier.size(500.dp, 100.dp).padding(end = 8.dp)
+            Text(
+                text = "당신의 MBTI는 $finalMBTI 입니다",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(top = 16.dp)
             )
+// IE그래프
+            Box(
+                modifier = Modifier
+                    .size(500.dp, 100.dp)
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ProportionBar(
+                    data = listOf(iPercentage, ePercentage),
+                    colors = listOf(Color.Blue, Color.Red),
+                    strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
+                    modifier = Modifier.fillMaxSize()
+                )
 
-            if (iPercentage < 100f && ePercentage < 100f) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "I ${"%.1f".format(iPercentage)}%",
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 30.dp, end = 0.dp)
-                    )
-                    Text(text = "E ${"%.1f".format(ePercentage)}%",
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 0.dp, end = 34.dp)
-                    )
+                if (iPercentage < 100f && ePercentage < 100f) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "I ${"%.1f".format(iPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 30.dp, end = 0.dp)
+                        )
+                        Text(
+                            text = "E ${"%.1f".format(ePercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 0.dp, end = 25.dp)
+                        )
+                    }
+                } else if (ePercentage < 100f) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    ) {
+                        Text(
+                            text = "I ${"%.1f".format(iPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                } else if (iPercentage < 100f) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    ) {
+                        Text(
+                            text = "E ${"%.1f".format(ePercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
-            } else if (ePercentage < 100f) {
-                Text(text = "I ${"%.1f".format(iPercentage)}%",
-                    color = Color.White
-                )
-            } else if (iPercentage < 100f) {
-                Text(text = "E ${"%.1f".format(ePercentage)}%",
-                    color = Color.White
-                )
             }
+
+// NS그래프
+            Box(
+                modifier = Modifier
+                    .size(500.dp, 100.dp)
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ProportionBar(
+                    data = listOf(nPercentage, sPercentage),
+                    colors = listOf(Color.Blue, Color.Red),
+                    strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                if (nPercentage < 100f && sPercentage < 100f) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "N ${"%.1f".format(nPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 30.dp, end = 0.dp)
+                        )
+                        Text(
+                            text = "S ${"%.1f".format(sPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 0.dp, end = 25.dp)
+                        )
+                    }
+                } else if (nPercentage < 100f) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    ) {
+                        Text(
+                            text = "N ${"%.1f".format(nPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                } else if (sPercentage < 100f) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    ) {
+                        Text(
+                            text = "S ${"%.1f".format(sPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+// TF그래프
+            Box(
+                modifier = Modifier
+                    .size(500.dp, 100.dp)
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ProportionBar(
+                    data = listOf(tPercentage, fPercentage),
+                    colors = listOf(Color.Blue, Color.Red),
+                    strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                if (tPercentage < 100f && fPercentage < 100f) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "T ${"%.1f".format(tPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 30.dp, end = 0.dp)
+                        )
+                        Text(
+                            text = "F ${"%.1f".format(fPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 0.dp, end = 25.dp)
+                        )
+                    }
+                } else if (tPercentage < 100f) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    ) {
+                        Text(
+                            text = "T ${"%.1f".format(tPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                } else if (fPercentage < 100f) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    ) {
+                        Text(
+                            text = "F ${"%.1f".format(fPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
+// PJ그래프
+            Box(
+                modifier = Modifier
+                    .size(500.dp, 100.dp)
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ProportionBar(
+                    data = listOf(pPercentage, jPercentage),
+                    colors = listOf(Color.Blue, Color.Red),
+                    strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                if (pPercentage < 100f && jPercentage < 100f) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "P ${"%.1f".format(pPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 30.dp, end = 0.dp)
+                        )
+                        Text(
+                            text = "J ${"%.1f".format(jPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 0.dp, end = 25.dp)
+                        )
+                    }
+                } else if (pPercentage < 100f) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    ) {
+                        Text(
+                            text = "P ${"%.1f".format(pPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                } else if (jPercentage < 100f) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    ) {
+                        Text(
+                            text = "J ${"%.1f".format(jPercentage)}%",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
         }
-
-
     }
 }
+
+
+
