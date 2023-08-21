@@ -55,6 +55,7 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.5.3")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("com.attafitamim.navigation:android:1.0.0-beta01")
+    implementation("androidx.leanback:leanback:1.0.0")
     val nav_version = "2.5.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("androidx.core:core-ktx:1.10.1")
@@ -73,5 +74,4 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

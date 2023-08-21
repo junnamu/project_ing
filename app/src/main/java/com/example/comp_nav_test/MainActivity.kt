@@ -9,6 +9,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.shrinkOut
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,25 +34,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.comp_nav_test.ui.theme.Comp_nav_testTheme
-import com.github.mikephil.charting.charts.HorizontalBarChart
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.PercentFormatter
 import kotlinx.coroutines.delay
 
 
@@ -131,6 +134,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 @Composable
 fun AppNavigation(scoreViewModel: ScoreViewModel) {
@@ -262,17 +266,13 @@ fun QuestionPageContent(
                         selectedAnswer.value = answer
                         scoreViewModel.saveSelectedAnswerIndex(answerIndex, index) // 선택한 답변의 인덱스 저장
                         scoreViewModel.incrementSelectedAnswerCount(index) // 해당 선택지 카운트 증가
-                    },
-                verticalAlignment = Alignment.CenterVertically
+                    }, verticalAlignment = Alignment.CenterVertically
             ) {
-                RadioButton(
-                    selected = answer == selectedAnswer.value,
-                    onClick = {
-                        selectedAnswer.value = answer
-                    })
+                RadioButton(selected = answer == selectedAnswer.value, onClick = {
+                    selectedAnswer.value = answer
+                })
                 Text(
-                    text = answer.text,
-                    modifier = Modifier.padding(start = 8.dp)
+                    text = answer.text, modifier = Modifier.padding(start = 8.dp)
                 )
             }
         }
@@ -304,11 +304,13 @@ fun QuestionPageContent(
 
                         val score = calculateScore(answer, answerOptions)
                         scoreViewModel.saveAnswerScore(answerIndex, score)
-                        scoreViewModel.saveSelectedAnswerText(answerIndex, answer.text) // Save selected answer text
+                        scoreViewModel.saveSelectedAnswerText(
+                            answerIndex,
+                            answer.text
+                        ) // Save selected answer text
                         onNextClicked()
                     }
-                },
-                enabled = selectedAnswer.value != null
+                }, enabled = selectedAnswer.value != null
             ) {
                 Text(text = "다음")
             }
@@ -334,15 +336,13 @@ fun Q1(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Blue"),
-            Answer("Red")
+            Answer("Blue"), Answer("Red")
         )
     }
 
     val questionText = "What is your favorite color?"
 
-    QuestionPageContent(
-        answerIndex = answerIndex,
+    QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
         scoreViewModel = scoreViewModel,
@@ -352,8 +352,7 @@ fun Q1(navController: NavController, scoreViewModel: ScoreViewModel) {
         onPreviousClicked = {
             scoreViewModel.clearAnswerScore(answerIndex)
             navController.popBackStack()
-        }
-    )
+        })
 }
 
 @Composable
@@ -362,15 +361,13 @@ fun Q2(navController: NavController, scoreViewModel: ScoreViewModel) { // scoreV
 
     val answerOptions = remember {
         listOf(
-            Answer("Option A"),
-            Answer("Option B")
+            Answer("Option A"), Answer("Option B")
         )
     }
 
     val questionText = "Choose an option"
 
-    QuestionPageContent(
-        answerIndex = answerIndex,
+    QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
         scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
@@ -381,8 +378,7 @@ fun Q2(navController: NavController, scoreViewModel: ScoreViewModel) { // scoreV
         onPreviousClicked = {
             scoreViewModel.clearAnswerScore(answerIndex)
             navController.popBackStack()
-        }
-    )
+        })
 }
 
 @Composable
@@ -391,15 +387,13 @@ fun Q3(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Option X"),
-            Answer("Option Y")
+            Answer("Option X"), Answer("Option Y")
         )
     }
 
     val questionText = "Another question"
 
-    QuestionPageContent(
-        answerIndex = answerIndex,
+    QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
         scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
@@ -409,8 +403,7 @@ fun Q3(navController: NavController, scoreViewModel: ScoreViewModel) {
         onPreviousClicked = {
             scoreViewModel.clearAnswerScore(answerIndex)
             navController.popBackStack()
-        }
-    )
+        })
 }
 
 @Composable
@@ -419,15 +412,13 @@ fun Q4(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Option P"),
-            Answer("Option Q")
+            Answer("Option P"), Answer("Option Q")
         )
     }
 
     val questionText = "Yet another question"
 
-    QuestionPageContent(
-        answerIndex = answerIndex,
+    QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
         scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
@@ -437,8 +428,7 @@ fun Q4(navController: NavController, scoreViewModel: ScoreViewModel) {
         onPreviousClicked = {
             scoreViewModel.clearAnswerScore(answerIndex)
             navController.popBackStack()
-        }
-    )
+        })
 }
 
 @Composable
@@ -447,15 +437,13 @@ fun Q5(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"),
-            Answer("Choice Y")
+            Answer("Choice X"), Answer("Choice Y")
         )
     }
 
     val questionText = "Last question"
 
-    QuestionPageContent(
-        answerIndex = answerIndex,
+    QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
         scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
@@ -465,8 +453,58 @@ fun Q5(navController: NavController, scoreViewModel: ScoreViewModel) {
         onPreviousClicked = {
             scoreViewModel.clearAnswerScore(answerIndex)
             navController.popBackStack()
+        })
+}
+
+
+@Composable
+fun ProportionBar(
+    data: List<Number>,
+    colors: List<Color>,
+    strokeWidth: Float,
+    cornerRadius: CornerRadius = CornerRadius(strokeWidth),
+    modifier: Modifier,
+) {
+    val sumOfData = data.map { it.toFloat() }.sum()
+    Canvas(
+        modifier = modifier
+    ) {
+        //canvas size 폭의 5%, 95% 지점을 시작점과 끝점으로 했습니다.
+        val lineStart = size.width * 0.05f
+        val lineEnd = size.width * 0.95f
+        //차트 길이
+        val lineLength = (lineEnd - lineStart)
+        //(canvas높이 - 차트 높이) * 0.5 를 하면 차트를 그릴 위쪽 오프셋을 구할 수 있습니다.
+        val lineHeightOffset = (size.height - strokeWidth) * 0.5f
+        val path = Path().apply {
+            addRoundRect(
+                RoundRect(
+                    Rect(
+                        offset = Offset(lineStart, lineHeightOffset),
+                        size = Size(lineLength, strokeWidth)
+                    ), cornerRadius
+                )
+            )
         }
-    )
+        val dataAndColor = data.zip(colors)
+        clipPath(
+            path
+        ) {
+            var dataStart = lineStart
+            dataAndColor.forEach { (number, color) ->
+                //끝점은 시작점 + (변량의 비율 * 전체 길이)
+                val dataEnd = dataStart + ((number.toFloat() / sumOfData) * lineLength)
+                drawRect(
+                    color = color,
+                    topLeft = Offset(dataStart, lineHeightOffset),
+                    size = Size(dataEnd - dataStart, strokeWidth)
+                )
+                //다음 사각형의 시작점은 현재의 끝점
+                dataStart = dataEnd
+            }
+        }
+
+    }
 }
 
 
@@ -495,97 +533,49 @@ fun ResultsPage(scoreViewModel: ScoreViewModel) {
                 answerChoiceCounts[selectedAnswerIndex] = choiceCount + 1
             }
         }
-        HorizontalBarChartWithText(scoreViewModel)
 
-        for ((choiceIndex, count) in answerChoiceCounts) {
-            Text(
-                text = "Choice $choiceIndex: Total Score = ${count * 20}",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(bottom = 16.dp)
+        // Calculate i and e percentages
+        val iCount = answerChoiceCounts[0] ?: 0
+        val eCount = answerChoiceCounts[1] ?: 0
+        val totalCount = iCount + eCount
+        val iPercentage = (iCount.toFloat() / totalCount) * 100
+        val ePercentage = (eCount.toFloat() / totalCount) * 100
+
+        Box(
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        ) {
+            ProportionBar(
+                data = listOf(iPercentage, ePercentage),
+                colors = listOf(Color.Blue, Color.Red),
+                strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
+                modifier = Modifier.size(500.dp, 100.dp).padding(end = 8.dp)
             )
-        }
-    }
-}
 
-@Composable
-fun HorizontalBarChartWithText(scoreViewModel: ScoreViewModel) {
-    val iCount = scoreViewModel.getSelectedAnswerCounts(0)
-    val eCount = scoreViewModel.getSelectedAnswerCounts(1)
-    val totalCount = iCount + eCount
-
-    val iPercentage = (iCount.toFloat() / totalCount) * 100
-    val ePercentage = (eCount.toFloat() / totalCount) * 100
-
-    val barEntries = listOf(
-        BarEntry(0f, floatArrayOf(iPercentage, ePercentage))
-    )
-
-    val dataSet = BarDataSet(barEntries, "")
-    dataSet.colors = listOf(android.graphics.Color.BLUE, android.graphics.Color.RED)
-
-    val data = BarData(dataSet)
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        AndroidView(
-            modifier = Modifier.size(550.dp, 100.dp),
-
-            factory = { context ->
-                val barChart = HorizontalBarChart(context)
-                barChart.data = data
-                barChart.setDrawValueAboveBar(true)
-                barChart.description.isEnabled = false
-                barChart.axisRight.isEnabled = false
-                barChart.legend.isEnabled = false
-
-                barChart.xAxis.setDrawGridLines(false)
-                barChart.xAxis.setDrawAxisLine(false)
-                barChart.xAxis.setDrawLabels(false)
-                barChart.xAxis.valueFormatter = PercentFormatter()
-
-                barChart.axisLeft.setDrawGridLines(false)
-                barChart.axisLeft.setDrawAxisLine(false)
-                barChart.axisLeft.setDrawLabels(false)
-                barChart.axisLeft.axisMinimum = 0f
-                barChart.axisLeft.axisMaximum = 100f
-
-                barChart.axisRight.isEnabled = false
-
-                barChart.animateY(800)
-
-                barChart.invalidate()
-
-                barChart
-            }
-        )
-
-        if (iPercentage < 100f && ePercentage < 100f) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+            if (iPercentage < 100f && ePercentage < 100f) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "I ${"%.1f".format(iPercentage)}%",
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 30.dp, end = 0.dp)
+                    )
+                    Text(text = "E ${"%.1f".format(ePercentage)}%",
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 0.dp, end = 34.dp)
+                    )
+                }
+            } else if (ePercentage < 100f) {
                 Text(text = "I ${"%.1f".format(iPercentage)}%",
-                    color = Color.White,
-                    modifier = Modifier.padding(start = 23.dp, end = 0.dp)
+                    color = Color.White
                 )
+            } else if (iPercentage < 100f) {
                 Text(text = "E ${"%.1f".format(ePercentage)}%",
-                    color = Color.White,
-                    modifier = Modifier.padding(start = 0.dp, end = 48.dp)
+                    color = Color.White
                 )
             }
-        } else if (ePercentage < 100f) {
-            Text(text = "I ${"%.1f".format(iPercentage)}%",
-                color = Color.White,
-                modifier = Modifier.padding(start = 0.dp, end = 15.dp)
-                )
-        } else if (iPercentage < 100f) {
-            Text(text = "E ${"%.1f".format(ePercentage)}%",
-                color = Color.White,
-                modifier = Modifier.padding(start = 0.dp, end = 15.dp)
-                )
         }
+
+
     }
 }
