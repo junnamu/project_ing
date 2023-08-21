@@ -349,7 +349,7 @@ fun Q1(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "아무도 없는 집에 들어가면 어떤 느낌을 받나요?"
+    val questionText = "아무도 없는 집에 들어가면 어떤 느낌을 받는지?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -374,7 +374,7 @@ fun Q2(navController: NavController, scoreViewModel: ScoreViewModel) { // scoreV
         )
     }
 
-    val questionText = "학창시절 인기가 많았나요?"
+    val questionText = "학창시절 인기가 많았었나요?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -401,7 +401,7 @@ fun Q3(navController: NavController, scoreViewModel: ScoreViewModel) {
         )
     }
 
-    val questionText = "친구랑 만나기로 했는데 갑자기 약속이 취소되었을 때"
+    val questionText = "친구랑 만나기로 했는데 갑자기 약속이 취소되었다"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -422,11 +422,11 @@ fun Q4(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Option P"), Answer("Option Q")
+            Answer("조용히 사람들을 관찰한다"), Answer("주변 사람에게 말을 걸어 대화를 시작한다")
         )
     }
 
-    val questionText = "Yet another question"
+    val questionText = "파티에 가서 당신의 행동에 가까운 것은?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -447,11 +447,11 @@ fun Q5(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("혼자할 수 있는 취미 생활을 즐긴다"), Answer("일단 취미 동호회에 가입해서 사람들과 어울린다")
         )
     }
 
-    val questionText = "question5"
+    val questionText = "취미 생활을 새로 시작한 당신은 어떤 스타일?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -472,11 +472,12 @@ fun Q6(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("가사가 너무 중요해~ 가사까지 마음에 들어야 최애곡!"),
+            Answer("노래는 멜로디지~ 흥얼흥얼 가사가 뭐가 중요해 음악은 Feel!")
         )
     }
 
-    val questionText = "question6"
+    val questionText = "노래 들을 때 뭐가 중요해?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -497,11 +498,11 @@ fun Q7(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("아뇨.."), Answer("네!")
         )
     }
 
-    val questionText = "question7"
+    val questionText = "당신은 운동을 잘하나요?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -522,11 +523,11 @@ fun Q8(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("백설공주, 애플 , 뉴턴, 아침사과, 금사과 "), Answer("빨갛다, 과일, 맛있다")
         )
     }
 
-    val questionText = "question8"
+    val questionText = "사과 하면 뭐가 더 생각나는지?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -547,11 +548,12 @@ fun Q9(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("책을 읽거나, 영화를 보거나, 음악을 듣는다"),
+            Answer("집안일을 하거나, 요리를 하거나, TV를 본다")
         )
     }
 
-    val questionText = "question9"
+    val questionText = "집에서 간만에 여유시간이 주어졌다면 당신은"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -572,11 +574,12 @@ fun Q10(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("비행기가 추락하면 어쩌지. 비상구 자리에 앉을까?"),
+            Answer("기내식 뭐 나오지? 비행기에선 영화나 볼까?")
         )
     }
 
-    val questionText = "question10"
+    val questionText = "비행기 타기 전 무슨 생각을 해?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -598,11 +601,12 @@ fun Q11(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("둘이 된다. 왜냐면 슬픈 사람이 두명이 되기 때문이지."),
+            Answer("반이 된다. 슬픔은 공유해야지~")
         )
     }
 
-    val questionText = "question11"
+    val questionText = "친구가 얘기한다. 슬픔을 나누면?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -623,11 +627,11 @@ fun Q12(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("펌했어? 커트? 염색? 사진찍어 보내봐"), Answer("왜 우울해? 무슨일 있었어?")
         )
     }
 
-    val questionText = "question12"
+    val questionText = "친구야 나 우울해서 미용실 갔다왔어."
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -648,11 +652,11 @@ fun Q13(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("보험은 들어놨어? 누구 과실이야?"), Answer("어디 많이 다쳤어? 너 괜찮냐?")
         )
     }
 
-    val questionText = "question13"
+    val questionText = "친구야 나 교통사고 났어.."
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -673,11 +677,11 @@ fun Q14(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("네 어느정도는 했죠"), Answer("아뇨 수학은 별로")
         )
     }
 
-    val questionText = "question14"
+    val questionText = "수학을 잘하는 편인가요? 과거에 잘하는 편이었는지"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -698,11 +702,11 @@ fun Q15(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("나 혼자 다녀올게. 너 할거 하고있어"), Answer("같이 가자! 혼자가면 심심하잖아")
         )
     }
 
-    val questionText = "question15"
+    val questionText = "맞다 친구야 차에 뭐 놓고왔나봐"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -723,11 +727,11 @@ fun Q16(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("읽지 않은 알람이.. 매우 많다."), Answer("읽지 않은 알람은 거의 없다")
         )
     }
 
-    val questionText = "question16"
+    val questionText = "당신의 보통 카카오톡 상태는?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -748,11 +752,11 @@ fun Q17(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("음식은 손맛이지. 감으로 하면 요리 완성!"), Answer("레시피랑 계량대로 잘 만드는게 중요해")
         )
     }
 
-    val questionText = "question17"
+    val questionText = "요리할 때 당신은 어떤 스타일?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -773,11 +777,11 @@ fun Q18(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("오~ 좋지. 어디로 갈까?"), Answer("응? 갑자기? 나 오늘 계획 다 세워놨는데..")
         )
     }
 
-    val questionText = "question18"
+    val questionText = "야 친구야 뭐하냐~ 심심한데 나와!"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -798,11 +802,12 @@ fun Q19(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("아뇨 더러운 것 같아요"),
+            Answer("네 깨끗한 편이죠")
         )
     }
 
-    val questionText = "question19"
+    val questionText = "당신의 방은 보통 깨끗한편인가요?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -824,11 +829,11 @@ fun Q20(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("Choice X"), Answer("Choice Y")
+            Answer("여행 계획을 세우지 않고, 그냥 떠나고 싶습니다"), Answer("여행지와 일정을 미리 계획하고, 예약을 합니다")
         )
     }
 
-    val questionText = "question20"
+    val questionText = "휴가를 간다면?"
 
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
@@ -1090,7 +1095,7 @@ fun ResultsPage(scoreViewModel: ScoreViewModel) {
                             modifier = Modifier.padding(start = 0.dp, end = 25.dp)
                         )
                     }
-                } else if (nPercentage < 100f) {
+                } else if (sPercentage < 100f) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1105,7 +1110,7 @@ fun ResultsPage(scoreViewModel: ScoreViewModel) {
                         )
                     }
 
-                } else if (sPercentage < 100f) {
+                } else if (nPercentage < 100f) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1153,7 +1158,7 @@ fun ResultsPage(scoreViewModel: ScoreViewModel) {
                             modifier = Modifier.padding(start = 0.dp, end = 25.dp)
                         )
                     }
-                } else if (tPercentage < 100f) {
+                } else if (fPercentage < 100f) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1168,7 +1173,7 @@ fun ResultsPage(scoreViewModel: ScoreViewModel) {
                         )
                     }
 
-                } else if (fPercentage < 100f) {
+                } else if (tPercentage < 100f) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1217,7 +1222,7 @@ fun ResultsPage(scoreViewModel: ScoreViewModel) {
                             modifier = Modifier.padding(start = 0.dp, end = 25.dp)
                         )
                     }
-                } else if (pPercentage < 100f) {
+                } else if (jPercentage < 100f) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1232,7 +1237,7 @@ fun ResultsPage(scoreViewModel: ScoreViewModel) {
                         )
                     }
 
-                } else if (jPercentage < 100f) {
+                } else if (pPercentage < 100f) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
