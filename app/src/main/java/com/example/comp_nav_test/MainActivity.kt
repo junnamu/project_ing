@@ -5,15 +5,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -43,10 +48,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -134,7 +142,7 @@ fun AppNavigation(scoreViewModel: ScoreViewModel) {
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController, startDestination = "q1"
+        navController = navController, startDestination = "title"
     ) {
         composable("title") { Title(navController) }
         composable("q1") { Q1(navController, scoreViewModel) }
@@ -158,19 +166,20 @@ fun AppNavigation(scoreViewModel: ScoreViewModel) {
         composable("q19") { Q19(navController, scoreViewModel) }
         composable("q20") { Q20(navController, scoreViewModel) }
         composable("results") {
-            ResultsPage(scoreViewModel = scoreViewModel)
+            ResultsPage(navController, scoreViewModel = scoreViewModel)
         }
     }
 }
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Title(navController: NavController) {
     val isVisible = remember { mutableStateOf(true) }
 
     LaunchedEffect(isVisible) {
         while (true) {
-            delay(600)
+            delay(500)
             isVisible.value = !isVisible.value
         }
     }
@@ -212,20 +221,27 @@ fun Title(navController: NavController) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
+        Box {
+            Column {
+                AnimatedVisibility(
+                    visible = isVisible.value, enter = fadeIn() + scaleIn(), exit = scaleOut()
+                ) {
+                    Text(
+                        text = "Click",
+                        fontSize = 35.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .alpha(0.5f)
+                            .animateContentSize(),
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = customFont
+                    )
+                }
 
-        AnimatedVisibility(
-            visible = isVisible.value, enter = fadeIn() + expandIn(), exit = shrinkOut()
-        ) {
-            Text(
-                text = "Click",
-                fontSize = 35.sp,
-                color = Color.DarkGray,
-                modifier = Modifier
-                    .alpha(0.5f)
-                    .animateContentSize(),
-                fontWeight = FontWeight.Bold,
-                fontFamily = customFont
-            )
+            }
+
+//        Box {
+            Spacer(modifier = Modifier.size(64.dp))
         }
     }
 }
@@ -250,89 +266,104 @@ fun QuestionPageContent(
     val selectedAnswerIndex = remember { mutableStateOf(-1) }
     val selectedAnswer = remember { mutableStateOf<Answer?>(null) }
 
-    Column(
+    Box(
         modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize() // 전체 화면을 채우도록 설정
+            .padding(16.dp), contentAlignment = Alignment.Center // 수직(세로) 중앙 정렬
     ) {
-        Text(
-            text = question,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "질문 $answerIndex",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = question,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        answerOptions.forEachIndexed { index, answer ->
+            answerOptions.forEachIndexed { index, answer ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable {
+                            selectedAnswerIndex.value = index // 선택한 답변의 인덱스를 저장
+                            selectedAnswer.value = answer
+                            scoreViewModel.saveSelectedAnswerIndex(
+                                answerIndex, index
+                            ) // 선택한 답변의 인덱스 저장
+                            scoreViewModel.incrementSelectedAnswerCount(index) // 해당 선택지 카운트 증가
+                        }, verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(selected = answer == selectedAnswer.value, onClick = {
+                        selectedAnswer.value = answer
+                    })
+                    Text(
+                        text = answer.text, modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
-                    .clickable {
-                        selectedAnswerIndex.value = index // 선택한 답변의 인덱스를 저장
-                        selectedAnswer.value = answer
-                        scoreViewModel.saveSelectedAnswerIndex(answerIndex, index) // 선택한 답변의 인덱스 저장
-                        scoreViewModel.incrementSelectedAnswerCount(index) // 해당 선택지 카운트 증가
-                    }, verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 16.dp, end = 16.dp, bottom = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                RadioButton(selected = answer == selectedAnswer.value, onClick = {
-                    selectedAnswer.value = answer
-                })
-                Text(
-                    text = answer.text, modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-        }
+                Button(onClick = onPreviousClicked) {
+                    Text(text = "이전")
+                }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, end = 16.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(onClick = onPreviousClicked) {
-                Text(text = "이전")
-            }
-
-            Button(
-                onClick = {
-                    selectedAnswer.value?.let { answer ->
-                        // Save or clear previous answer score depending on navigation direction
-                        if (answerIndex > 1) {
-                            val previousScore = scoreViewModel.getAnswerScore(answerIndex - 1)
-                            if (previousScore != 0) {
-                                // Use previous score if available
-                                scoreViewModel.saveAnswerScore(answerIndex, previousScore)
-                            } else {
-                                // Clear previous score if not available
-                                scoreViewModel.clearAnswerScore(answerIndex)
+                Button(
+                    onClick = {
+                        selectedAnswer.value?.let { answer ->
+                            // Save or clear previous answer score depending on navigation direction
+                            if (answerIndex > 1) {
+                                val previousScore = scoreViewModel.getAnswerScore(answerIndex - 1)
+                                if (previousScore != 0) {
+                                    // Use previous score if available
+                                    scoreViewModel.saveAnswerScore(answerIndex, previousScore)
+                                } else {
+                                    // Clear previous score if not available
+                                    scoreViewModel.clearAnswerScore(answerIndex)
+                                }
                             }
+
+                            val score = calculateScore(answer, answerOptions)
+                            scoreViewModel.saveAnswerScore(answerIndex, score)
+                            scoreViewModel.saveSelectedAnswerText(
+                                answerIndex, answer.text
+                            ) // Save selected answer text
+                            onNextClicked()
                         }
-
-                        val score = calculateScore(answer, answerOptions)
-                        scoreViewModel.saveAnswerScore(answerIndex, score)
-                        scoreViewModel.saveSelectedAnswerText(
-                            answerIndex, answer.text
-                        ) // Save selected answer text
-                        onNextClicked()
-                    }
-                }, enabled = selectedAnswer.value != null
-            ) {
-                Text(text = "다음")
+                    }, enabled = selectedAnswer.value != null
+                ) {
+                    Text(text = "다음")
+                }
             }
-        }
 
-        // Display selected answer and its score
-        selectedAnswer.value?.let { selected ->
-            val score = scoreViewModel.getAnswerScore(answerIndex)
-            Text(
-                text = "Selected Answer: ${selected.text}\nScore: $score",
-                modifier = Modifier.padding(top = 16.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
+            // Display selected answer and its score
+//            selectedAnswer.value?.let { selected ->
+//                val score = scoreViewModel.getAnswerScore(answerIndex)
+//                Text(
+//                    text = "Selected Answer: ${selected.text}\nScore: $score",
+//                    modifier = Modifier.padding(top = 16.dp),
+//                    fontWeight = FontWeight.Bold,
+//                    fontSize = 16.sp
+//                )
+//            }
         }
     }
 }
@@ -344,8 +375,7 @@ fun Q1(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("와~ 드디어 나만의 시간이다. 편하고 행복하다"),
-            Answer("외롭다 바깥과는 달리 깜깜하고 너무 조용해")
+            Answer("와~ 드디어 나만의 시간이다. 편하고 행복하다"), Answer("외롭다 바깥과는 달리 깜깜하고 너무 조용해")
         )
     }
 
@@ -396,8 +426,7 @@ fun Q3(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("와~ 갑자기 혼자만의 시간이 생겼네. 뭐하지? 신나~~"),
-            Answer("아 이럴수가 그럼.. 누구를 만날까? 연락해봐야지")
+            Answer("와~ 갑자기 혼자만의 시간이 생겼네. 뭐하지? 신나~~"), Answer("아 이럴수가 그럼.. 누구를 만날까? 연락해봐야지")
         )
     }
 
@@ -472,8 +501,7 @@ fun Q6(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("가사가 너무 중요해~ 가사까지 마음에 들어야 최애곡!"),
-            Answer("노래는 멜로디지~ 흥얼흥얼 가사가 뭐가 중요해 음악은 Feel!")
+            Answer("가사가 너무 중요해~ 가사까지 마음에 들어야 최애곡!"), Answer("노래는 멜로디지~ 흥얼흥얼 가사가 뭐가 중요해 음악은 Feel!")
         )
     }
 
@@ -548,8 +576,7 @@ fun Q9(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("책을 읽거나, 영화를 보거나, 음악을 듣는다"),
-            Answer("집안일을 하거나, 요리를 하거나, TV를 본다")
+            Answer("책을 읽거나, 영화를 보거나, 음악을 듣는다"), Answer("집안일을 하거나, 요리를 하거나, TV를 본다")
         )
     }
 
@@ -574,8 +601,7 @@ fun Q10(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("비행기가 추락하면 어쩌지. 비상구 자리에 앉을까?"),
-            Answer("기내식 뭐 나오지? 비행기에선 영화나 볼까?")
+            Answer("비행기가 추락하면 어쩌지. 비상구 자리에 앉을까?"), Answer("기내식 뭐 나오지? 비행기에선 영화나 볼까?")
         )
     }
 
@@ -601,8 +627,7 @@ fun Q11(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("둘이 된다. 왜냐면 슬픈 사람이 두명이 되기 때문이지."),
-            Answer("반이 된다. 슬픔은 공유해야지~")
+            Answer("둘이 된다. 왜냐면 슬픈 사람이 두명이 되기 때문이지."), Answer("반이 된다. 슬픔은 공유해야지~")
         )
     }
 
@@ -802,8 +827,7 @@ fun Q19(navController: NavController, scoreViewModel: ScoreViewModel) {
 
     val answerOptions = remember {
         listOf(
-            Answer("아뇨 더러운 것 같아요"),
-            Answer("네 깨끗한 편이죠")
+            Answer("아뇨 더러운 것 같아요"), Answer("네 깨끗한 편이죠")
         )
     }
 
@@ -897,363 +921,440 @@ fun ProportionBar(
 }
 
 
+val mbtiDescriptions = mapOf(
+    "ISTJ" to """
+ISTJ - 청렴결백한 논리주의자: 질서와 안정을 중요시하며 책임감이 강하고 현실적입니다. 계획적이고 조직적인 성향이 있습니다.
+    """.trimIndent(), "ISFJ" to """
+ISFJ - 용감한 수호자: 따뜻하고 현실적이며 자신을 희생하는 경향이 있습니다. 다른 사람의 필요를 챙기는데 능숙하며 세심한 관리자입니다.
+    """.trimIndent(), "INFJ" to """
+INFJ - 선의의 옹호자: 이해심이 깊고 비전을 가지며 창의적입니다. 타인의 성장을 도모하고 공동체에 기여하는 데 관심이 많습니다.
+    """.trimIndent(), "INTJ" to """
+INTJ - 전략가: 분석적이고 논리적인 사고를 지닌 전략적 사고자입니다. 계획을 세우고 목표를 달성하기 위해 노력합니다.
+    """.trimIndent(), "ISTP" to """
+ISTP - 만능재주꾼: 문제 해결 능력이 뛰어나며 현실적인 도구를 다루는 데 능숙합니다. 논리적 사고와 실용성을 중요시합니다.
+    """.trimIndent(), "ISFP" to """
+ISFP - 호기심 많은 예술가: 예술적인 감각이 뛰어나며 센스가 있습니다. 감정 표현에 능숙하고 자연과 조화롭게 연결되기를 원합니다.
+    """.trimIndent(), "INFP" to """
+INFP - 열정적인 중재자: 이상적이고 창의적인 성향을 가졌으며 타인의 감정과 가치를 중요시합니다. 개인적인 성장을 추구합니다.
+    """.trimIndent(), "INTP" to """
+INTP - 논리적인 사색가: 
+분석과 비판적 사고를 중요시하며 복잡한 문제를 해결하는 데 능숙합니다. 지식을 추구하고 탐구합니다.
+    """.trimIndent(), "ESTP" to """
+ESTP - 모험심 많은 사업가: 자신감이 넘치며 리더십을 펼치는 데 능숙합니다. 현실적이고 활동적인 성향을 가지며 도전을 즐깁니다.
+    """.trimIndent(), "ESFP" to """
+ESFP - 자유로운 영혼의 연예인: 사교적이고 재능 있는 멀티태스커입니다. 즉흥적으로 행동하며 새로운 경험을 즐깁니다.
+    """.trimIndent(), "ENTP" to """
+ENTP - 논쟁을 즐기는 변론가: 독창적이고 논리적인 사고를 가지며 문제 해결에 열정을 갖습니다. 새로운 아이디어를 창출하고 토론을 즐깁니다.
+    """.trimIndent(), "ENTP" to """
+ENTP - 논쟁을 즐기는 변론가: 독창적이고 논리적인 사고를 가지며 문제 해결에 열정을 갖습니다. 새로운 아이디어를 창출하고 토론을 즐깁니다.
+    """.trimIndent(), "ESFJ" to """
+ESFJ - 사교적인 친선도모자: 사회적인 상호작용을 중요시하며 다른 사람을 돕는 데 열정적입니다. 조화롭고 협조적인 성향을 가집니다.
+    """.trimIndent(), "ESFJ" to """
+ESFJ - 사교적인 친선도모자: 사회적인 상호작용을 중요시하며 다른 사람을 돕는 데 열정적입니다. 조화롭고 협조적인 성향을 가집니다.
+    """.trimIndent(), "ENFJ" to """
+ENFJ - 정열적인 사회운동가: 친절하고 동정심이 많으며 타인의 성장을 도모하려는 노력을 기울입니다. 리더십과 커뮤니케이션 능력이 뛰어납니다.
+    """.trimIndent(), "ENTJ" to """
+ENTJ - 대담한 통솔자: 목표 지향적이며 리더십을 펼치는 데 능숙합니다.
+ 조직을 효율적으로 운영하고 목표를 달성하기 위해 노력합니다.
+    """.trimIndent()
+)
+
+fun getMBTIDescription(mbtiType: String): String {
+    return mbtiDescriptions[mbtiType] ?: "Unknown MBTI type"
+}
+
 @Composable
-fun ResultsPage(scoreViewModel: ScoreViewModel) {
-    val answerScores = scoreViewModel.getAnswerScores()
-    val answerChoiceCounts = mutableMapOf<Int, Int>()
-    var iCount = 0
-    var eCount = 0
-    var nCount = 0
-    var sCount = 0
-    var tCount = 0
-    var fCount = 0
-    var pCount = 0
-    var jCount = 0
+fun ResultsPage(navController: NavController, scoreViewModel: ScoreViewModel) {
+    LazyColumn(
+        Modifier.fillMaxSize(), contentPadding = PaddingValues(10.dp)
+    ) {
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "결과",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+        }
 
-    for ((index) in answerScores.withIndex()) {
-        val selectedAnswerIndex = scoreViewModel.getSelectedAnswerIndex(index)
-        if (selectedAnswerIndex != null) {
-            val choiceCount = answerChoiceCounts.getOrDefault(selectedAnswerIndex, 0)
-            answerChoiceCounts[selectedAnswerIndex] = choiceCount + 1
+        val answerScores = scoreViewModel.getAnswerScores()
+        val answerChoiceCounts = mutableMapOf<Int, Int>()
+        var iCount = 0
+        var eCount = 0
+        var nCount = 0
+        var sCount = 0
+        var tCount = 0
+        var fCount = 0
+        var pCount = 0
+        var jCount = 0
 
-            when (index) {
-                in 1..5 -> { // 사고/감정 범위
-                    if (selectedAnswerIndex == 0) {
-                        iCount++
-                    } else if (selectedAnswerIndex == 1) {
-                        eCount++
-                    }
-                }
+        for ((index) in answerScores.withIndex()) {
+            val selectedAnswerIndex = scoreViewModel.getSelectedAnswerIndex(index)
+            if (selectedAnswerIndex != null) {
+                val choiceCount = answerChoiceCounts.getOrDefault(selectedAnswerIndex, 0)
+                answerChoiceCounts[selectedAnswerIndex] = choiceCount + 1
 
-                in 6..10 -> { // 감각/직관 범위
-                    if (selectedAnswerIndex == 0) {
-                        nCount++
-                    } else if (selectedAnswerIndex == 1) {
-                        sCount++
+                when (index) {
+                    in 1..5 -> { // 사고/감정 범위
+                        if (selectedAnswerIndex == 0) {
+                            iCount++
+                        } else if (selectedAnswerIndex == 1) {
+                            eCount++
+                        }
                     }
-                }
-                in 11..15 -> { // 사고/감정 범위
-                    if (selectedAnswerIndex == 0) {
-                        tCount++
-                    } else if (selectedAnswerIndex == 1) {
-                        fCount++
+
+                    in 6..10 -> { // 감각/직관 범위
+                        if (selectedAnswerIndex == 0) {
+                            nCount++
+                        } else if (selectedAnswerIndex == 1) {
+                            sCount++
+                        }
                     }
-                }
-                in 15..19 -> { // 판단/인식 범위
-                    if (selectedAnswerIndex == 0) {
-                        pCount++
-                    } else if (selectedAnswerIndex == 1) {
-                        jCount++
+
+                    in 11..15 -> { // 사고/감정 범위
+                        if (selectedAnswerIndex == 0) {
+                            tCount++
+                        } else if (selectedAnswerIndex == 1) {
+                            fCount++
+                        }
+                    }
+
+                    in 15..19 -> { // 판단/인식 범위
+                        if (selectedAnswerIndex == 0) {
+                            pCount++
+                        } else if (selectedAnswerIndex == 1) {
+                            jCount++
+                        }
                     }
                 }
             }
         }
-    }
 
-    // Percentage 계산
-    val ieCount = iCount + eCount
-    val nsCount = nCount + sCount
-    val tfCount = tCount + fCount
-    val pjCount = pCount + jCount
+        // Percentage 계산
+        val ieCount = iCount + eCount
+        val nsCount = nCount + sCount
+        val tfCount = tCount + fCount
+        val pjCount = pCount + jCount
 
-    val iPercentage = (iCount.toFloat() / ieCount) * 100
-    val ePercentage = (eCount.toFloat() / ieCount) * 100
-    val nPercentage = (nCount.toFloat() / nsCount) * 100
-    val sPercentage = (sCount.toFloat() / nsCount) * 100
-    val tPercentage = (tCount.toFloat() / tfCount) * 100
-    val fPercentage = (fCount.toFloat() / tfCount) * 100
-    val pPercentage = (pCount.toFloat() / pjCount) * 100
-    val jPercentage = (jCount.toFloat() / pjCount) * 100
-
-    val iOrE = if (iCount > eCount) "I" else "E"
-    val nOrS = if (nCount > sCount) "N" else "S"
-    val tOrF = if (tCount > fCount) "T" else "F"
-    val pOrJ = if (pCount > jCount) "P" else "J"
-
-    // 최종 MBTI 출력
-    val finalMBTI = "$iOrE$nOrS$tOrF$pOrJ"
+        val iPercentage = (iCount.toFloat() / ieCount) * 100
+        val ePercentage = (eCount.toFloat() / ieCount) * 100
+        val nPercentage = (nCount.toFloat() / nsCount) * 100
+        val sPercentage = (sCount.toFloat() / nsCount) * 100
+        val tPercentage = (tCount.toFloat() / tfCount) * 100
+        val fPercentage = (fCount.toFloat() / tfCount) * 100
+        val pPercentage = (pCount.toFloat() / pjCount) * 100
+        val jPercentage = (jCount.toFloat() / pjCount) * 100
 
 
+        // 최종 MBTI 출력할 변수 선언
+        val iOrE = if (iCount > eCount) "I" else "E"
+        val nOrS = if (nCount > sCount) "N" else "S"
+        val tOrF = if (tCount > fCount) "T" else "F"
+        val pOrJ = if (pCount > jCount) "P" else "J"
 
+        val finalMBTI = "$iOrE$nOrS$tOrF$pOrJ"
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp)
-    ) {
-        Text(
-            text = "Results",
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-
-
-        Column(
-            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "당신의 MBTI는 $finalMBTI 입니다",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-// IE그래프
-            Box(
-                modifier = Modifier
-                    .size(500.dp, 100.dp)
-                    .padding(vertical = 8.dp),
-                contentAlignment = Alignment.Center
+        // 최종 MBTI 출력
+        item {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ProportionBar(
-                    data = listOf(iPercentage, ePercentage),
-                    colors = listOf(Color.Blue, Color.Red),
-                    strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
-                    modifier = Modifier.fillMaxSize()
+                Text(
+                    //최종MBTI 변수로 설정된 finalMBTI만 폰트사이즈 크게
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontSize = 24.sp)) {
+                            append("당신의 MBTI는 ")
+                        }
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = 36.sp, fontWeight = FontWeight.Bold
+                            )
+                        ) {
+                            append(finalMBTI)
+                        }
+                        withStyle(style = SpanStyle(fontSize = 24.sp)) {
+                            append(" 입니다")
+                        }
+                    }, modifier = Modifier.padding(top = 16.dp), textAlign = TextAlign.Center
                 )
 
-                if (iPercentage < 100f && ePercentage < 100f) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "I ${"%.1f".format(iPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 30.dp, end = 0.dp)
-                        )
-                        Text(
-                            text = "E ${"%.1f".format(ePercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 0.dp, end = 25.dp)
-                        )
-                    }
-                } else if (ePercentage < 100f) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    ) {
-                        Text(
-                            text = "I ${"%.1f".format(iPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                Text(
+                    text = (getMBTIDescription(finalMBTI)),
+                    modifier = Modifier.padding(top = 16.dp),
+                    textAlign = TextAlign.Center
+                )
 
-                } else if (iPercentage < 100f) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    ) {
-                        Text(
-                            text = "E ${"%.1f".format(ePercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
-                        )
+
+
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+
+// IE그래프
+                Box(
+                    modifier = Modifier.size(500.dp, 60.dp), contentAlignment = Alignment.Center
+                ) {
+                    ProportionBar(
+                        data = listOf(iPercentage, ePercentage),
+                        colors = listOf(Color.Blue, Color.Red),
+                        strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
+                        modifier = Modifier.fillMaxSize()
+                    )
+
+                    if (iPercentage < 100f && ePercentage < 100f) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "I ${"%.1f".format(iPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 30.dp, end = 0.dp)
+                            )
+                            Text(
+                                text = "E ${"%.1f".format(ePercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 0.dp, end = 25.dp)
+                            )
+                        }
+                    } else if (ePercentage < 100f) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "I ${"%.1f".format(iPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                    } else if (iPercentage < 100f) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "E ${"%.1f".format(ePercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
-            }
 
 // NS그래프
-            Box(
-                modifier = Modifier
-                    .size(500.dp, 100.dp)
-                    .padding(vertical = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                ProportionBar(
-                    data = listOf(nPercentage, sPercentage),
-                    colors = listOf(Color.Blue, Color.Red),
-                    strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
-                    modifier = Modifier.fillMaxSize()
-                )
+                Box(
+                    modifier = Modifier.size(500.dp, 60.dp), contentAlignment = Alignment.Center
+                ) {
+                    ProportionBar(
+                        data = listOf(nPercentage, sPercentage),
+                        colors = listOf(Color.Blue, Color.Red),
+                        strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
+                        modifier = Modifier.fillMaxSize()
+                    )
 
-                if (nPercentage < 100f && sPercentage < 100f) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "N ${"%.1f".format(nPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 30.dp, end = 0.dp)
-                        )
-                        Text(
-                            text = "S ${"%.1f".format(sPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 0.dp, end = 25.dp)
-                        )
-                    }
-                } else if (sPercentage < 100f) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    ) {
-                        Text(
-                            text = "N ${"%.1f".format(nPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    if (nPercentage < 100f && sPercentage < 100f) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "N ${"%.1f".format(nPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 30.dp, end = 0.dp)
+                            )
+                            Text(
+                                text = "S ${"%.1f".format(sPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 0.dp, end = 25.dp)
+                            )
+                        }
+                    } else if (sPercentage < 100f) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "N ${"%.1f".format(nPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
-                } else if (nPercentage < 100f) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    ) {
-                        Text(
-                            text = "S ${"%.1f".format(sPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
-                        )
+                    } else if (nPercentage < 100f) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "S ${"%.1f".format(sPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
-            }
 // TF그래프
-            Box(
-                modifier = Modifier
-                    .size(500.dp, 100.dp)
-                    .padding(vertical = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                ProportionBar(
-                    data = listOf(tPercentage, fPercentage),
-                    colors = listOf(Color.Blue, Color.Red),
-                    strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
-                    modifier = Modifier.fillMaxSize()
-                )
+                Box(
+                    modifier = Modifier.size(500.dp, 60.dp), contentAlignment = Alignment.Center
+                ) {
+                    ProportionBar(
+                        data = listOf(tPercentage, fPercentage),
+                        colors = listOf(Color.Blue, Color.Red),
+                        strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
+                        modifier = Modifier.fillMaxSize()
+                    )
 
-                if (tPercentage < 100f && fPercentage < 100f) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "T ${"%.1f".format(tPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 30.dp, end = 0.dp)
-                        )
-                        Text(
-                            text = "F ${"%.1f".format(fPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 0.dp, end = 25.dp)
-                        )
-                    }
-                } else if (fPercentage < 100f) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    ) {
-                        Text(
-                            text = "T ${"%.1f".format(tPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    if (tPercentage < 100f && fPercentage < 100f) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "T ${"%.1f".format(tPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 30.dp, end = 0.dp)
+                            )
+                            Text(
+                                text = "F ${"%.1f".format(fPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 0.dp, end = 25.dp)
+                            )
+                        }
+                    } else if (fPercentage < 100f) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "T ${"%.1f".format(tPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
-                } else if (tPercentage < 100f) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    ) {
-                        Text(
-                            text = "F ${"%.1f".format(fPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
-                        )
+                    } else if (tPercentage < 100f) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "F ${"%.1f".format(fPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
-            }
 
 // PJ그래프
-            Box(
-                modifier = Modifier
-                    .size(500.dp, 100.dp)
-                    .padding(vertical = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                ProportionBar(
-                    data = listOf(pPercentage, jPercentage),
-                    colors = listOf(Color.Blue, Color.Red),
-                    strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
-                    modifier = Modifier.fillMaxSize()
-                )
+                Box(
+                    modifier = Modifier.size(500.dp, 60.dp), contentAlignment = Alignment.Center
+                ) {
+                    ProportionBar(
+                        data = listOf(pPercentage, jPercentage),
+                        colors = listOf(Color.Blue, Color.Red),
+                        strokeWidth = with(LocalDensity.current) { 40.dp.toPx() },
+                        modifier = Modifier.fillMaxSize()
+                    )
 
-                if (pPercentage < 100f && jPercentage < 100f) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "P ${"%.1f".format(pPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 30.dp, end = 0.dp)
-                        )
-                        Text(
-                            text = "J ${"%.1f".format(jPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 0.dp, end = 25.dp)
-                        )
-                    }
-                } else if (jPercentage < 100f) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    ) {
-                        Text(
-                            text = "P ${"%.1f".format(pPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    if (pPercentage < 100f && jPercentage < 100f) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "P ${"%.1f".format(pPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 30.dp, end = 0.dp)
+                            )
+                            Text(
+                                text = "J ${"%.1f".format(jPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 0.dp, end = 25.dp)
+                            )
+                        }
+                    } else if (jPercentage < 100f) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "P ${"%.1f".format(pPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
-                } else if (pPercentage < 100f) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    ) {
-                        Text(
-                            text = "J ${"%.1f".format(jPercentage)}%",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
-                        )
+                    } else if (pPercentage < 100f) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "J ${"%.1f".format(jPercentage)}%",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
+        }
 
+        item {
+            Button(
+                onClick = {
+                    navController.navigate("title")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 100.dp)
+                    .padding(top = 16.dp)
+            ) {
+                Text(text = "메인 페이지로 돌아가기")
+            }
         }
     }
 }
