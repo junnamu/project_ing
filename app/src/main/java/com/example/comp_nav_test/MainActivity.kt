@@ -228,10 +228,9 @@ fun Title(navController: NavController) {
                 ) {
                     Text(
                         text = "Click",
-                        fontSize = 35.sp,
-                        color = Color.Black,
+                        fontSize = 38.sp,
                         modifier = Modifier
-                            .alpha(0.5f)
+                            .alpha(0.95f)
                             .animateContentSize(),
                         fontWeight = FontWeight.Bold,
                         fontFamily = customFont
