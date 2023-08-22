@@ -7,11 +7,9 @@ import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -65,39 +64,53 @@ import androidx.navigation.compose.rememberNavController
 import com.example.comp_nav_test.ui.theme.Comp_nav_testTheme
 import kotlinx.coroutines.delay
 
+// 사용할 data를 class로 선언
+data class Answer(val text: String, var isSelected: Boolean = false)
+data class Percentages(
+    val iPercentage: Float,
+    val ePercentage: Float,
+    val nPercentage: Float,
+    val sPercentage: Float,
+    val tPercentage: Float,
+    val fPercentage: Float,
+    val pPercentage: Float,
+    val jPercentage: Float
+)
 
+// 데이터 및 계산한 함수를 호출할 때 여러 화면 전환시 데이터전달 목적으로 뷰모델 사용
 class ScoreViewModel : ViewModel() {
     private val answerScoreMap = mutableMapOf<Int, Int>() // 답변 인덱스를 키로 사용하여 점수 저장
     private val selectedAnswerIndexMap = mutableMapOf<Int, Int>()
     private val selectedAnswerCountMap = mutableMapOf<Int, Int>()
     private val selectedAnswerTextMap = mutableMapOf<Int, String>()
 
+    //점수 저장하는 함수
     fun saveAnswerScore(answerIndex: Int, score: Int) {
         answerScoreMap[answerIndex] = score
     }
-
+    //점수 불러오는 함수
     fun getAnswerScore(answerIndex: Int): Int {
         return answerScoreMap[answerIndex] ?: 0
     }
-
+    //저장된 점수 초기화
     fun clearAnswerScore(answerIndex: Int) {
         answerScoreMap.remove(answerIndex)
     }
-
+    //사용자가 선택한 답변 인덱스를 저장
     fun saveSelectedAnswerIndex(answerIndex: Int, selectedIndex: Int) {
         selectedAnswerIndexMap[answerIndex] = selectedIndex
     }
-
+    //사용자가 선택한 답변 인덱스를 불러오는 함수
     fun getSelectedAnswerIndex(answerIndex: Int): Int? {
         return selectedAnswerIndexMap[answerIndex]
     }
-
+    //사용자가 입력한 답변 텍스트를 저장
     fun saveSelectedAnswerText(answerIndex: Int, answerText: String) {
         selectedAnswerTextMap[answerIndex] = answerText
     }
 
 
-    // New function to get all answer scores
+    //모든 답변에 대한 점수 리스트를 반환
     fun getAnswerScores(): List<Int> {
         val answerScores = mutableListOf<Int>()
         for (index in 0 until MAX_QUESTION_INDEX) {
@@ -105,21 +118,112 @@ class ScoreViewModel : ViewModel() {
         }
         return answerScores
     }
-
-
+    //선택된 답변의 인덱스를 기준으로 선택된 횟수 증가
     fun incrementSelectedAnswerCount(choiceIndex: Int) {
         val currentCount = selectedAnswerCountMap.getOrDefault(choiceIndex, 0)
         selectedAnswerCountMap[choiceIndex] = currentCount + 1
     }
-
+    //최대 질문수 설정,  0부터 20까지의 질문 인덱스 값을 얻으려고 21로 설정
     companion object {
         const val MAX_QUESTION_INDEX = 21
     }
+
+    fun calculateMBTI(answerScores: List<Int>): Pair<Percentages, String> {
+        val answerChoiceCounts = mutableMapOf<Int, Int>()
+
+        var iCount = 0
+        var eCount = 0
+        var nCount = 0
+        var sCount = 0
+        var tCount = 0
+        var fCount = 0
+        var pCount = 0
+        var jCount = 0
+
+        for ((index) in answerScores.withIndex()) {
+            val selectedAnswerIndex = getSelectedAnswerIndex(index)
+            if (selectedAnswerIndex != null) {
+                val choiceCount = answerChoiceCounts.getOrDefault(selectedAnswerIndex, 0)
+                answerChoiceCounts[selectedAnswerIndex] = choiceCount + 1
+
+                when (index) {
+                    in 1..5 -> {
+                        if (selectedAnswerIndex == 0) {
+                            iCount++
+                        } else if (selectedAnswerIndex == 1) {
+                            eCount++
+                        }
+                    }
+
+                    in 6..10 -> {
+                        if (selectedAnswerIndex == 0) {
+                            nCount++
+                        } else if (selectedAnswerIndex == 1) {
+                            sCount++
+                        }
+                    }
+
+                    in 11..15 -> {
+                        if (selectedAnswerIndex == 0) {
+                            tCount++
+                        } else if (selectedAnswerIndex == 1) {
+                            fCount++
+                        }
+                    }
+
+                    in 15..19 -> {
+                        if (selectedAnswerIndex == 0) {
+                            pCount++
+                        } else if (selectedAnswerIndex == 1) {
+                            jCount++
+                        }
+                    }
+                }
+            }
+        }
+
+        val ieCount = iCount + eCount
+        val nsCount = nCount + sCount
+        val tfCount = tCount + fCount
+        val pjCount = pCount + jCount
+
+        val iPercentage = (iCount.toFloat() / ieCount) * 100
+        val ePercentage = (eCount.toFloat() / ieCount) * 100
+        val nPercentage = (nCount.toFloat() / nsCount) * 100
+        val sPercentage = (sCount.toFloat() / nsCount) * 100
+        val tPercentage = (tCount.toFloat() / tfCount) * 100
+        val fPercentage = (fCount.toFloat() / tfCount) * 100
+        val pPercentage = (pCount.toFloat() / pjCount) * 100
+        val jPercentage = (jCount.toFloat() / pjCount) * 100
+        //
+        val percentages = Percentages(
+            iPercentage, ePercentage, nPercentage, sPercentage,
+            tPercentage, fPercentage, pPercentage, jPercentage
+        )
+        // MBTI 조합
+        val iOrE = if (iCount > eCount) "I" else "E"
+        val nOrS = if (nCount > sCount) "N" else "S"
+        val tOrF = if (tCount > fCount) "T" else "F"
+        val pOrJ = if (pCount > jCount) "P" else "J"
+        // 최종 MBTI 출력
+        val finalMBTI = "$iOrE$nOrS$tOrF$pOrJ"
+
+        return Pair(percentages, finalMBTI)
+    }
+
+
+}
+// 선택된 답변마다 점수 계산하는 함수
+private fun calculateScore(selectedAnswer: Answer, answerOptions: List<Answer>): Int {
+    return when (selectedAnswer) {
+        answerOptions[0] -> 20
+        answerOptions[1] -> 20
+        else -> 0
+    }
 }
 
-data class Answer(val text: String, var isSelected: Boolean = false)
-
 class MainActivity : ComponentActivity() {
+    //뷰모델 사용을 위해 선언
     private val scoreViewModel: ScoreViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,13 +240,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
+//네비게이션 컴포즈 / 뷰모델도 각각 데이터 전달
 @Composable
 fun AppNavigation(scoreViewModel: ScoreViewModel) {
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController, startDestination = "title"
+        navController = navController, startDestination = "results"
     ) {
         composable("title") { Title(navController) }
         composable("q1") { Q1(navController, scoreViewModel) }
@@ -165,25 +269,29 @@ fun AppNavigation(scoreViewModel: ScoreViewModel) {
         composable("q18") { Q18(navController, scoreViewModel) }
         composable("q19") { Q19(navController, scoreViewModel) }
         composable("q20") { Q20(navController, scoreViewModel) }
-        composable("results") {
+        composable("results") { backStackEntry ->
             ResultsPage(navController, scoreViewModel = scoreViewModel)
         }
+        composable("spResult") { SPResultScreen(navController, scoreViewModel) }
+        composable("sjResult") { SJResultScreen(navController, scoreViewModel) }
+        composable("nfReuslt") { NFResultScreen(navController, scoreViewModel) }
+        composable("ntResult") { NTResultScreen(navController, scoreViewModel) }
     }
 }
 
-
+//메인 타이틀 화면
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Title(navController: NavController) {
+    //애니메이션 반복
     val isVisible = remember { mutableStateOf(true) }
-
     LaunchedEffect(isVisible) {
         while (true) {
             delay(500)
             isVisible.value = !isVisible.value
         }
     }
-
+    //메인화면에 사용될 폰트 변수 선언
     val customFont = FontFamily(
         Font(R.font.cafe24_regular, FontWeight.Normal), Font(R.font.cafe24_bold, FontWeight.Bold)
     )
@@ -221,6 +329,7 @@ fun Title(navController: NavController) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
+        //Click 텍스트가 커지면서 나타났다가 작아지면서 사라지는 애니메이션
         Box {
             Column {
                 AnimatedVisibility(
@@ -245,14 +354,7 @@ fun Title(navController: NavController) {
     }
 }
 
-private fun calculateScore(selectedAnswer: Answer, answerOptions: List<Answer>): Int {
-    return when (selectedAnswer) {
-        answerOptions[0] -> 20
-        answerOptions[1] -> 20
-        else -> 0
-    }
-}
-
+//질문화면 내용 함수로 각 질문 화면으로 중복되는 코드를 분리했다
 @Composable
 fun QuestionPageContent(
     answerIndex: Int,
@@ -328,14 +430,17 @@ fun QuestionPageContent(
                 Button(
                     onClick = {
                         selectedAnswer.value?.let { answer ->
-                            // Save or clear previous answer score depending on navigation direction
+                            // 현재 질문 인덱스가 1보다 크다면
                             if (answerIndex > 1) {
+                                //이전 질문에서 점수를 가져오고
                                 val previousScore = scoreViewModel.getAnswerScore(answerIndex - 1)
+                                // 이전 점수가 0이 아니라면 (이전에 답변이 있었다면)
                                 if (previousScore != 0) {
-                                    // Use previous score if available
+                                    // 이전 점수를 현재 질문의 점수로 저장
                                     scoreViewModel.saveAnswerScore(answerIndex, previousScore)
                                 } else {
-                                    // Clear previous score if not available
+                                    // 이전 점수가 0이면 (이전에 답변이 없었다면)
+                                    // 현재 질문의 점수를 초기화
                                     scoreViewModel.clearAnswerScore(answerIndex)
                                 }
                             }
@@ -344,7 +449,7 @@ fun QuestionPageContent(
                             scoreViewModel.saveAnswerScore(answerIndex, score)
                             scoreViewModel.saveSelectedAnswerText(
                                 answerIndex, answer.text
-                            ) // Save selected answer text
+                            )
                             onNextClicked()
                         }
                     }, enabled = selectedAnswer.value != null
@@ -352,22 +457,11 @@ fun QuestionPageContent(
                     Text(text = "다음")
                 }
             }
-
-            // Display selected answer and its score
-//            selectedAnswer.value?.let { selected ->
-//                val score = scoreViewModel.getAnswerScore(answerIndex)
-//                Text(
-//                    text = "Selected Answer: ${selected.text}\nScore: $score",
-//                    modifier = Modifier.padding(top = 16.dp),
-//                    fontWeight = FontWeight.Bold,
-//                    fontSize = 16.sp
-//                )
-//            }
         }
     }
 }
 
-
+//각 질문 답변 화면 Q1~Q20까지의 함수
 @Composable
 fun Q1(navController: NavController, scoreViewModel: ScoreViewModel) {
     val answerIndex = 1
@@ -384,6 +478,7 @@ fun Q1(navController: NavController, scoreViewModel: ScoreViewModel) {
         question = questionText,
         answerOptions = answerOptions,
         scoreViewModel = scoreViewModel,
+        //
         onNextClicked = {
             navController.navigate("q2")
         },
@@ -394,7 +489,7 @@ fun Q1(navController: NavController, scoreViewModel: ScoreViewModel) {
 }
 
 @Composable
-fun Q2(navController: NavController, scoreViewModel: ScoreViewModel) { // scoreViewModel 전달 추가
+fun Q2(navController: NavController, scoreViewModel: ScoreViewModel) {
     val answerIndex = 2
 
     val answerOptions = remember {
@@ -408,7 +503,7 @@ fun Q2(navController: NavController, scoreViewModel: ScoreViewModel) { // scoreV
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
 
         onNextClicked = {
             navController.navigate("q3")
@@ -434,7 +529,7 @@ fun Q3(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q4")
         },
@@ -459,7 +554,7 @@ fun Q4(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q5")
         },
@@ -484,7 +579,7 @@ fun Q5(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q6")
         },
@@ -509,7 +604,7 @@ fun Q6(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q7")
         },
@@ -534,7 +629,7 @@ fun Q7(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q8")
         },
@@ -559,7 +654,7 @@ fun Q8(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q9")
         },
@@ -586,7 +681,7 @@ fun Q9(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q10")
         },
@@ -611,7 +706,7 @@ fun Q10(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q11")
         },
@@ -637,7 +732,7 @@ fun Q11(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q12")
         },
@@ -662,7 +757,7 @@ fun Q12(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q13")
         },
@@ -687,7 +782,7 @@ fun Q13(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q14")
         },
@@ -712,7 +807,7 @@ fun Q14(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q15")
         },
@@ -737,7 +832,7 @@ fun Q15(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q16")
         },
@@ -762,7 +857,7 @@ fun Q16(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q17")
         },
@@ -787,7 +882,7 @@ fun Q17(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q18")
         },
@@ -812,7 +907,7 @@ fun Q18(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q19")
         },
@@ -837,7 +932,7 @@ fun Q19(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("q20")
         },
@@ -863,7 +958,7 @@ fun Q20(navController: NavController, scoreViewModel: ScoreViewModel) {
     QuestionPageContent(answerIndex = answerIndex,
         question = questionText,
         answerOptions = answerOptions,
-        scoreViewModel = scoreViewModel, // scoreViewModel 전달 추가
+        scoreViewModel = scoreViewModel,
         onNextClicked = {
             navController.navigate("results")
         },
@@ -872,8 +967,7 @@ fun Q20(navController: NavController, scoreViewModel: ScoreViewModel) {
             navController.popBackStack()
         })
 }
-
-
+//각 유형 차트마다 차트를 컴포즈로 그려주기 위한 ProportionBar 함수
 @Composable
 fun ProportionBar(
     data: List<Number>,
@@ -920,8 +1014,200 @@ fun ProportionBar(
 
     }
 }
+//SP 재테크추천 화면
+@Composable
+fun SPResultScreen(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val (percentages, finalMBTI) = scoreViewModel.calculateMBTI(scoreViewModel.getAnswerScores())
+    val srText = buildAnnotatedString {
+        withStyle(style = SpanStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold)) {
+            append(finalMBTI)
+        }
+        append(" 는 도전적이에요. \n위기 대처 능력도 우수해서, 주가 흐름을 빠르게 파악하여 투자하는 단기 투자에 강합니다.")
+        append("\n뛰어난 순발력으로 거래량과 시황을 확인하여 수익을 내는 것이죠.")
+        append("\n그러나 그만큼 리스크가 큰 위험한 투자에 빠지기 쉽습니다.")
+        append("\n이익보다 손실을 따지는 통제력을 기르고, 적립식 투자와 같은 안정적인 투자와 병행하는 것을 추천합니다.")
+    }
 
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = srText,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(bottom = 30.dp)
+        )
+        
+        Button(
+            onClick = {
+                navController.navigate("title")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 110.dp)
+                .padding(top = 16.dp)
+        ) {
+            Text(
+                text = "메인 페이지로\n돌아가기",
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White,
+            )
+        }
+    }
+}
+//SJ 재테크추천 화면
+@Composable
+fun SJResultScreen(navController: NavController, scoreViewModel: ScoreViewModel) {
 
+    val (percentages, finalMBTI) = scoreViewModel.calculateMBTI(scoreViewModel.getAnswerScores())
+    val sjText = buildAnnotatedString {
+        withStyle(style = SpanStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold)) {
+            append(finalMBTI)
+        }
+        append(" 는 신중한 편이에요. \n보수적인 이들에겐 안정적인 재테크를 추천합니다.")
+        append("\n안전한 목돈 마련 방법인 예·적금, 손실 위험은 줄이고 수익률을 높이는 장기 투자 및 대형 우량주 투자,")
+        append("\n주기적으로 배당 수익이 발생하는 리츠 투자 등의 상품이 있습니다.")
+        append("\n하지만 원금 손실에 대한 두려움으로 수익성을 놓칠 수 있어요.")
+        append("\n꼼꼼한 사전 공부로 안정성이 높은 상품들을 추려 재테크 포트폴리오를 계획해보세요.")
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = sjText,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(bottom = 30.dp)
+        )
+        Button(
+            onClick = {
+                navController.navigate("title")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 110.dp)
+                .padding(top = 16.dp)
+        ) {
+            Text(
+                text = "메인 페이지로\n 돌아가기",
+                fontSize = (16.sp),
+                textAlign = TextAlign.Center,
+                color = Color.White,
+
+                )
+        }
+
+    }
+}
+//NT 재테크추천 화면
+@Composable
+fun NTResultScreen(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val (percentages, finalMBTI) = scoreViewModel.calculateMBTI(scoreViewModel.getAnswerScores())
+    val ntText = buildAnnotatedString {
+        withStyle(style = SpanStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold)) {
+            append(finalMBTI)
+        }
+        append(" 는 논리적이에요. \n배움을 좋아하고, 통찰력이 뛰어나 어떤 재테크도 시작하기에 무리가 없습니다.")
+        append("\n주식 매매 시에는 시황뿐만 아니라 전망, 기술력, 성장 가능성 등 다양한 정보를 확인하고 좋은 투자처도 잘 찾아냅니다.")
+        append("\n다만 자신을 과신할 위험이 있어요. 꾸준한 공부와 사례 연구로 자신만의 투자 방법을 구축해야 합니다.")
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = ntText,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(bottom = 30.dp)
+        )
+        Button(
+            onClick = {
+                navController.navigate("title")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 110.dp)
+                .padding(top = 16.dp)
+        ) {
+            Text(
+                text = "메인 페이지로\n 돌아가기",
+                fontSize = (16.sp),
+                textAlign = TextAlign.Center,
+                color = Color.White,
+
+                )
+        }
+
+    }
+}
+//NF 재테크추천 화면
+@Composable
+fun NFResultScreen(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val (percentages, finalMBTI) = scoreViewModel.calculateMBTI(scoreViewModel.getAnswerScores())
+    val nfText = buildAnnotatedString {
+        withStyle(style = SpanStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold)) {
+            append(finalMBTI)
+        }
+        append(" 는 가치 중심적이에요. \n돈보다는 정신적 성장과 이상향에 집중하는 편입니다.")
+        append("\n이들은 먼저 자신의 관심사에 따라 재테크를 시작해보는 것을 추천할게요.")
+        append("\n예를 들어, 음악 저작권 재테크 플랫폼인 ‘뮤직 카우’를 이용하면, 좋아하는 가수나 음악에 투자할 수 있습니다.")
+        append("\n또 좋아하는 작가가 있다면, 작품 NFT 투자를 시작할 수 있어요.")
+        append("\n다만 관심이 적은 만큼, 원금을 손실하면 금방 포기하기 쉽습니다.")
+        append("\n관리의 필요성이 적고, 꾸준한 수익이 생기는 예금 및 적금 상품도 함께 추천합니다.")
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = nfText,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(bottom = 30.dp)
+        )
+        Button(
+            onClick = {
+                navController.navigate("title")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 110.dp)
+                .padding(top = 16.dp)
+        ) {
+            Text(
+                text = "메인 페이지로\n 돌아가기",
+                fontSize = (16.sp),
+                textAlign = TextAlign.Center,
+                color = Color.White,
+
+                )
+        }
+
+    }
+}
+
+//각각 유형별 설명 map으로 저장
 val mbtiDescriptions = mapOf(
     "ISTJ" to """
 ISTJ - 청렴결백한 논리주의자: 질서와 안정을 중요시하며 책임감이 강하고 현실적입니다. 계획적이고 조직적인 성향이 있습니다.
@@ -960,12 +1246,24 @@ ENTJ - 대담한 통솔자: 목표 지향적이며 리더십을 펼치는 데 �
     """.trimIndent()
 )
 
+//각각 유형별 설명 불러오는 함수
 fun getMBTIDescription(mbtiType: String): String {
     return mbtiDescriptions[mbtiType] ?: "Unknown MBTI type"
 }
 
+//결과 화면
 @Composable
 fun ResultsPage(navController: NavController, scoreViewModel: ScoreViewModel) {
+    val (percentages, finalMBTI) = scoreViewModel.calculateMBTI(scoreViewModel.getAnswerScores())
+    val iPercentage = percentages.iPercentage
+    val ePercentage = percentages.ePercentage
+    val nPercentage = percentages.nPercentage
+    val sPercentage = percentages.sPercentage
+    val tPercentage = percentages.tPercentage
+    val fPercentage = percentages.fPercentage
+    val pPercentage = percentages.pPercentage
+    val jPercentage = percentages.jPercentage
+
     LazyColumn(
         Modifier.fillMaxSize(), contentPadding = PaddingValues(10.dp)
     ) {
@@ -985,84 +1283,6 @@ fun ResultsPage(navController: NavController, scoreViewModel: ScoreViewModel) {
             }
         }
 
-        val answerScores = scoreViewModel.getAnswerScores()
-        val answerChoiceCounts = mutableMapOf<Int, Int>()
-        var iCount = 0
-        var eCount = 0
-        var nCount = 0
-        var sCount = 0
-        var tCount = 0
-        var fCount = 0
-        var pCount = 0
-        var jCount = 0
-
-        for ((index) in answerScores.withIndex()) {
-            val selectedAnswerIndex = scoreViewModel.getSelectedAnswerIndex(index)
-            if (selectedAnswerIndex != null) {
-                val choiceCount = answerChoiceCounts.getOrDefault(selectedAnswerIndex, 0)
-                answerChoiceCounts[selectedAnswerIndex] = choiceCount + 1
-
-                when (index) {
-                    in 1..5 -> { // 사고/감정 범위
-                        if (selectedAnswerIndex == 0) {
-                            iCount++
-                        } else if (selectedAnswerIndex == 1) {
-                            eCount++
-                        }
-                    }
-
-                    in 6..10 -> { // 감각/직관 범위
-                        if (selectedAnswerIndex == 0) {
-                            nCount++
-                        } else if (selectedAnswerIndex == 1) {
-                            sCount++
-                        }
-                    }
-
-                    in 11..15 -> { // 사고/감정 범위
-                        if (selectedAnswerIndex == 0) {
-                            tCount++
-                        } else if (selectedAnswerIndex == 1) {
-                            fCount++
-                        }
-                    }
-
-                    in 15..19 -> { // 판단/인식 범위
-                        if (selectedAnswerIndex == 0) {
-                            pCount++
-                        } else if (selectedAnswerIndex == 1) {
-                            jCount++
-                        }
-                    }
-                }
-            }
-        }
-
-        // Percentage 계산
-        val ieCount = iCount + eCount
-        val nsCount = nCount + sCount
-        val tfCount = tCount + fCount
-        val pjCount = pCount + jCount
-
-        val iPercentage = (iCount.toFloat() / ieCount) * 100
-        val ePercentage = (eCount.toFloat() / ieCount) * 100
-        val nPercentage = (nCount.toFloat() / nsCount) * 100
-        val sPercentage = (sCount.toFloat() / nsCount) * 100
-        val tPercentage = (tCount.toFloat() / tfCount) * 100
-        val fPercentage = (fCount.toFloat() / tfCount) * 100
-        val pPercentage = (pCount.toFloat() / pjCount) * 100
-        val jPercentage = (jCount.toFloat() / pjCount) * 100
-
-
-        // 최종 MBTI 출력할 변수 선언
-        val iOrE = if (iCount > eCount) "I" else "E"
-        val nOrS = if (nCount > sCount) "N" else "S"
-        val tOrF = if (tCount > fCount) "T" else "F"
-        val pOrJ = if (pCount > jCount) "P" else "J"
-
-        val finalMBTI = "$iOrE$nOrS$tOrF$pOrJ"
-
-        // 최종 MBTI 출력
         item {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -1099,7 +1319,7 @@ fun ResultsPage(navController: NavController, scoreViewModel: ScoreViewModel) {
                 Spacer(modifier = Modifier.height(20.dp))
 
 
-// IE그래프
+// IE차트
                 Box(
                     modifier = Modifier.size(500.dp, 60.dp), contentAlignment = Alignment.Center
                 ) {
@@ -1160,7 +1380,7 @@ fun ResultsPage(navController: NavController, scoreViewModel: ScoreViewModel) {
                     }
                 }
 
-// NS그래프
+// NS차트
                 Box(
                     modifier = Modifier.size(500.dp, 60.dp), contentAlignment = Alignment.Center
                 ) {
@@ -1220,7 +1440,7 @@ fun ResultsPage(navController: NavController, scoreViewModel: ScoreViewModel) {
                         }
                     }
                 }
-// TF그래프
+// TF차트
                 Box(
                     modifier = Modifier.size(500.dp, 60.dp), contentAlignment = Alignment.Center
                 ) {
@@ -1281,7 +1501,7 @@ fun ResultsPage(navController: NavController, scoreViewModel: ScoreViewModel) {
                     }
                 }
 
-// PJ그래프
+// PJ차트
                 Box(
                     modifier = Modifier.size(500.dp, 60.dp), contentAlignment = Alignment.Center
                 ) {
@@ -1343,7 +1563,7 @@ fun ResultsPage(navController: NavController, scoreViewModel: ScoreViewModel) {
                 }
             }
         }
-
+        //메인 돌아가기 버튼
         item {
             Button(
                 onClick = {
@@ -1351,12 +1571,52 @@ fun ResultsPage(navController: NavController, scoreViewModel: ScoreViewModel) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 100.dp)
+                    .padding(horizontal = 110.dp)
                     .padding(top = 16.dp)
             ) {
-                Text(text = "메인 페이지로 돌아가기")
+                Text(
+                    text = "메인 페이지로\n 돌아가기",
+                    fontSize = (16.sp),
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+
+                    )
             }
         }
+        //재테크 추천 버튼 : 각 mbti 유형마다 연결 / 조건은 특정 문자열이 포함될 경우 총 4개의 페이지로 각각 중복해서 연결
+        item {
+            Button(
+                onClick = {
+                    when {
+                        finalMBTI.contains("STP") || finalMBTI.contains("SFP") -> navController.navigate(
+                            "spResult"
+                        )
+
+                        finalMBTI.contains("STJ") || finalMBTI.contains("SFJ") -> navController.navigate(
+                            "sjResult"
+                        )
+
+                        finalMBTI.contains("SF") -> navController.navigate("sjResult")
+                        finalMBTI.contains("NT") -> navController.navigate("ntResult")
+                        finalMBTI.contains("NF") -> navController.navigate("nfResult")
+                        else -> navController.navigate("title") // 기본 메인 페이지로 이동
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 105.dp)
+                    .padding(top = 16.dp)
+            ) {
+                Text(
+                    text = "$finalMBTI\n\uD83D\uDCB0 재테크 추천",
+                    fontSize = (16.sp),
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
     }
 }
 
