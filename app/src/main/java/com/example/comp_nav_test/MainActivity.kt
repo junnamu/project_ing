@@ -246,7 +246,7 @@ fun AppNavigation(scoreViewModel: ScoreViewModel) {
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController, startDestination = "results"
+        navController = navController, startDestination = "title"
     ) {
         composable("title") { Title(navController) }
         composable("q1") { Q1(navController, scoreViewModel) }
